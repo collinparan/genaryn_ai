@@ -137,7 +137,7 @@ Key configuration options in `.env`:
 ```bash
 # LLM Configuration
 DO_LLM_ENDPOINT=https://w3af7ebiihzxumrnhjb2nh2o.agents.do-ai.run/api/v1/chat/completions
-LLM_MODEL=meta-llama/llama-3.2-3b-instruct
+LLM_MODEL=gpt-oss-120b
 
 # Database
 DATABASE_URL=postgresql://user:password@postgres:5432/genaryn

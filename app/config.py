@@ -34,7 +34,7 @@ class Settings(BaseSettings):
         description="Digital Ocean LLM endpoint",
     )
     LLM_MODEL: str = Field(
-        default="meta-llama/llama-3.2-3b-instruct", description="LLM model to use"
+        default="gpt-oss-120b", description="LLM model to use"
     )
 
     # JWT Authentication

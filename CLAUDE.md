@@ -22,7 +22,7 @@ The system must:
 ### LLM Integration
 - **Endpoint**: `https://w3af7ebiihzxumrnhjb2nh2o.agents.do-ai.run/api/v1/chat/completions`
 - **Type**: OpenAI-compatible API
-- **Model**: `meta-llama/llama-3.2-3b-instruct`
+- **Model**: `gpt-oss-120b` (OpenAI GPT variant)
 - **Key Feature**: Streaming responses for real-time interaction
 - **No API Key Required**: Open endpoint
 
