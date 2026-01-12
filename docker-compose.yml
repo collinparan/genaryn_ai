@@ -1,0 +1,145 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: genaryn-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-genaryn}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password}
+      POSTGRES_DB: ${DB_NAME:-genaryn_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-genaryn}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - genaryn-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: genaryn-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "AUTH", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - genaryn-network
+
+  # FastAPI Backend Application
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: genaryn-backend
+    environment:
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-genaryn}
+      DB_PASSWORD: ${DB_PASSWORD:-secure_password}
+      DB_NAME: ${DB_NAME:-genaryn_db}
+
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+
+      # LLM Configuration
+      DO_LLM_ENDPOINT: ${DO_LLM_ENDPOINT:-https://w3af7ebiihzxumrnhjb2nh2o.agents.do-ai.run/api/v1/chat/completions}
+
+      # JWT Configuration
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-secret-key-change-in-production}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+
+      # Application Configuration
+      APP_ENV: ${APP_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:80}
+    volumes:
+      - ./app:/code/app
+      - ./tests:/code/tests
+      - ./alembic:/code/alembic
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - genaryn-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: genaryn-frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+      VITE_WS_URL: ${VITE_WS_URL:-ws://localhost:8000}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - genaryn-network
+    command: npm run dev -- --host 0.0.0.0
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: genaryn-nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites:/etc/nginx/sites-available:ro
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - "${NGINX_SSL_PORT:-443}:443"
+    depends_on:
+      - backend
+      - frontend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - genaryn-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  genaryn-network:
+    driver: bridge
+    name: genaryn-network

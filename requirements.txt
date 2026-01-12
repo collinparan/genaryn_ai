@@ -1,0 +1,70 @@
+# Core Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Database
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+alembic==1.13.1
+psycopg2-binary==2.9.9
+
+# Redis
+redis[hiredis]==5.0.1
+hiredis==2.3.2
+
+# Authentication
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+# HTTP Client for LLM
+httpx==0.26.0
+sse-starlette==2.0.0
+
+# WebSocket Support
+websockets==12.0
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.3
+
+# Monitoring and Logging
+prometheus-client==0.19.0
+structlog==24.1.0
+
+# Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+httpx==0.26.0  # For testing async HTTP calls
+
+# Development Tools
+ruff==0.1.11
+pyright==1.1.344
+ipython==8.19.0
+
+# Security
+slowapi==0.1.9  # Rate limiting
+email-validator==2.1.0
+
+# Task Queue (Optional)
+celery==5.3.4
+flower==2.0.1
+
+# Date and Time
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Utilities
+python-dotenv==1.0.0
+aiofiles==23.2.1
+
+# Markdown and Documentation
+markdown==3.5.1
+pyyaml==6.0.1
+
+# Type checking
+types-redis==4.6.0.11
+types-requests==2.31.0.10
+types-python-jose==3.3.4.8
