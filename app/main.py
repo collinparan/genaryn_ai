@@ -104,7 +104,7 @@ app.add_middleware(LoggingMiddleware)
 
 # Include routers
 app.include_router(health.router, prefix="", tags=["Health"])
-app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(auth.router, tags=["Authentication"])
 app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 app.include_router(conversations.router, prefix="/conversations", tags=["Conversations"])
 app.include_router(decisions.router, prefix="/decisions", tags=["Decisions"])

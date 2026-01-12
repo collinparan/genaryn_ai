@@ -18,6 +18,8 @@ hiredis==2.3.2
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
+PyJWT==2.8.0
+bcrypt==4.1.2
 
 # HTTP Client for LLM
 httpx==0.26.0
