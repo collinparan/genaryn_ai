@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-gray-900 text-gray-100;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-600 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
+  }
+}
+
+@layer components {
+  /* Military-style button */
+  .btn-military {
+    @apply px-4 py-2 bg-primary-600 text-white font-medium rounded-md
+           hover:bg-primary-700 active:bg-primary-800
+           transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-gray-900;
+  }
+
+  /* Command console style */
+  .console {
+    @apply bg-gray-950 border border-gray-700 rounded-lg p-4
+           font-mono text-sm text-green-400;
+  }
+
+  /* Status indicator */
+  .status-indicator {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  .status-online {
+    @apply bg-green-500 animate-pulse;
+  }
+
+  .status-offline {
+    @apply bg-red-500;
+  }
+
+  .status-busy {
+    @apply bg-yellow-500 animate-pulse-slow;
+  }
+
+  /* Message bubble */
+  .message-user {
+    @apply bg-primary-800 text-white rounded-lg px-4 py-3 max-w-3xl ml-auto;
+  }
+
+  .message-assistant {
+    @apply bg-gray-800 text-gray-100 rounded-lg px-4 py-3 max-w-3xl;
+  }
+
+  /* Decision card */
+  .decision-card {
+    @apply bg-gray-800 border border-gray-700 rounded-lg p-4
+           hover:border-primary-600 transition-colors duration-200;
+  }
+
+  /* Risk level badges */
+  .risk-low {
+    @apply bg-green-900 text-green-300 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  .risk-moderate {
+    @apply bg-yellow-900 text-yellow-300 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  .risk-high {
+    @apply bg-orange-900 text-orange-300 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  .risk-extreme {
+    @apply bg-red-900 text-red-300 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  /* Classification badges */
+  .classification-unclassified {
+    @apply bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs font-bold uppercase;
+  }
+
+  .classification-confidential {
+    @apply bg-blue-900 text-blue-300 px-2 py-1 rounded text-xs font-bold uppercase;
+  }
+
+  .classification-secret {
+    @apply bg-orange-900 text-orange-300 px-2 py-1 rounded text-xs font-bold uppercase;
+  }
+
+  .classification-top-secret {
+    @apply bg-red-900 text-red-300 px-2 py-1 rounded text-xs font-bold uppercase;
+  }
+}
+
+@layer utilities {
+  /* Text shadows for military aesthetic */
+  .text-shadow {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: 0 0 20px rgba(26, 84, 144, 0.5);
+  }
+
+  .glow-secondary {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  }
+
+  /* Tactical grid background */
+  .tactical-grid {
+    background-image:
+      linear-gradient(rgba(26, 84, 144, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26, 84, 144, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+}

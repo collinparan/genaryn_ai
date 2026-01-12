@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+.env
+.env.*
+!.env.example
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+postgres-data/
+redis-data/
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# Secrets
+secrets/
+credentials/
+*.key
+*.pem
+*.crt
+
+# Frontend build
+node_modules/
+build/
+dist/
+.next/
+out/
+*.tsbuildinfo
+.cache/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Alembic
+alembic.ini.local
