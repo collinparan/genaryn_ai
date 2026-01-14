@@ -256,7 +256,7 @@ Be concise, accurate, and maintain operational security."""
         }
 
         if include_metadata:
-            data["conversation"]["metadata"] = conversation.metadata
+            data["conversation"]["metadata"] = conversation.conversation_metadata
             data["conversation"]["context"] = conversation.context
             data["conversation"]["tags"] = conversation.tags
 

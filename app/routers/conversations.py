@@ -62,7 +62,7 @@ async def create_conversation(
             classification=conversation.classification,
             mission_id=conversation.mission_id,
             context=conversation.context,
-            metadata=conversation.metadata,
+            conversation_metadata=conversation.metadata,
             tags=conversation.tags,
         )
         return ConversationResponse.from_orm(new_conversation)
@@ -185,7 +185,7 @@ async def update_conversation(
             type=update.type,
             classification=update.classification,
             context=update.context,
-            metadata=update.metadata,
+            conversation_metadata=update.metadata,
             tags=update.tags,
         )
 

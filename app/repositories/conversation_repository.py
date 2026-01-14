@@ -28,7 +28,7 @@ class ConversationRepository:
         classification: ClassificationLevel = ClassificationLevel.UNCLASSIFIED,
         mission_id: Optional[UUID] = None,
         context: Optional[Dict[str, Any]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        conversation_metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
     ) -> Conversation:
         """Create a new conversation."""
@@ -39,7 +39,7 @@ class ConversationRepository:
             classification=classification,
             mission_id=mission_id,
             context=context or {},
-            metadata=metadata or {},
+            conversation_metadata=conversation_metadata or {},
             tags=tags or [],
         )
         self.db.add(conversation)
@@ -96,7 +96,7 @@ class ConversationRepository:
         type: Optional[ConversationType] = None,
         classification: Optional[ClassificationLevel] = None,
         context: Optional[Dict[str, Any]] = None,
-        metadata: Optional[Dict[str, Any]] = None,
+        conversation_metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None,
     ) -> Optional[Conversation]:
         """Update a conversation."""
@@ -114,8 +114,8 @@ class ConversationRepository:
             conversation.classification = classification
         if context is not None:
             conversation.context = context
-        if metadata is not None:
-            conversation.metadata = metadata
+        if conversation_metadata is not None:
+            conversation.conversation_metadata = conversation_metadata
         if tags is not None:
             conversation.tags = tags
 
