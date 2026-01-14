@@ -66,15 +66,5 @@ class Conversation(Base):
     messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan", order_by="Message.created_at")
     decisions = relationship("Decision", back_populates="conversation", cascade="all, delete-orphan")
 
-    @property
-    def metadata(self):
-        """Property to maintain backward compatibility with API."""
-        return self.conversation_metadata
-
-    @metadata.setter
-    def metadata(self, value):
-        """Setter to maintain backward compatibility with API."""
-        self.conversation_metadata = value
-
     def __repr__(self):
         return f"<Conversation(id={self.id}, title={self.title}, type={self.type})>"

@@ -6,7 +6,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer, model_serializer
 
 from app.models.conversation import ConversationType, ClassificationLevel
 from app.models.message import MessageRole, MessageType
@@ -115,6 +115,28 @@ class ConversationResponse(ConversationBase):
 
     class Config:
         from_attributes = True
+
+    @classmethod
+    def from_orm(cls, obj):
+        """Custom from_orm to handle conversation_metadata -> metadata mapping."""
+        # Create a dict from the ORM object
+        data = {
+            'id': obj.id,
+            'user_id': obj.user_id,
+            'title': obj.title,
+            'type': obj.type,
+            'classification': obj.classification,
+            'mission_id': obj.mission_id,
+            'context': obj.context,
+            'metadata': obj.conversation_metadata,  # Map conversation_metadata to metadata
+            'tags': obj.tags,
+            'summary': obj.summary,
+            'message_count': obj.message_count,
+            'last_message_at': obj.last_message_at,
+            'created_at': obj.created_at,
+            'updated_at': obj.updated_at,
+        }
+        return cls(**data)
 
 
 class ConversationWithMessages(ConversationResponse):
