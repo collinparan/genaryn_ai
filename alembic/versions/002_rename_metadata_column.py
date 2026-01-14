@@ -22,7 +22,13 @@ def upgrade() -> None:
     # Rename metadata column to conversation_metadata in conversations table
     op.alter_column('conversations', 'metadata', new_column_name='conversation_metadata')
 
+    # Rename metadata column to message_metadata in messages table
+    op.alter_column('messages', 'metadata', new_column_name='message_metadata')
+
 
 def downgrade() -> None:
+    # Rename message_metadata back to metadata
+    op.alter_column('messages', 'message_metadata', new_column_name='metadata')
+
     # Rename conversation_metadata back to metadata
     op.alter_column('conversations', 'conversation_metadata', new_column_name='metadata')

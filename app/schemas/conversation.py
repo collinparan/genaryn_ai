@@ -102,6 +102,26 @@ class MessageResponse(MessageBase):
     class Config:
         from_attributes = True
 
+    @classmethod
+    def from_orm(cls, obj):
+        """Custom from_orm to handle message_metadata -> metadata mapping."""
+        data = {
+            'id': obj.id,
+            'conversation_id': obj.conversation_id,
+            'user_id': obj.user_id,
+            'role': obj.role,
+            'content': obj.content,
+            'type': obj.type,
+            'metadata': obj.message_metadata,  # Map message_metadata to metadata
+            'tokens_used': obj.tokens_used,
+            'processing_time_ms': obj.processing_time_ms,
+            'confidence_score': obj.confidence_score,
+            'sources': obj.sources,
+            'created_at': obj.created_at,
+            'edited_at': obj.edited_at,
+        }
+        return cls(**data)
+
 
 class ConversationResponse(ConversationBase):
     """Conversation response schema."""

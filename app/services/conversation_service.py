@@ -270,7 +270,7 @@ Be concise, accurate, and maintain operational security."""
             }
 
             if include_metadata:
-                msg_data["metadata"] = msg.metadata
+                msg_data["metadata"] = msg.message_metadata
                 msg_data["tokens_used"] = msg.tokens_used
                 msg_data["processing_time_ms"] = msg.processing_time_ms
 

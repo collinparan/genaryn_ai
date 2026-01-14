@@ -38,7 +38,7 @@ class MessageRepository:
             role=role,
             type=type,
             content=content,
-            metadata=metadata or {},
+            message_metadata=metadata or {},
             tokens_used=tokens_used,
             processing_time_ms=processing_time_ms,
             confidence_score=confidence_score,

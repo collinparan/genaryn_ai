@@ -47,7 +47,7 @@ class Message(Base):
     content = Column(Text, nullable=False)
 
     # Metadata
-    metadata = Column(JSONB, default={})  # Attachments, references, etc.
+    message_metadata = Column(JSONB, default={})  # Attachments, references, etc.
     tokens_used = Column(Integer)  # Token count for LLM usage tracking
     processing_time_ms = Column(Float)  # Response time tracking
 
