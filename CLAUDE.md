@@ -19,26 +19,38 @@ The system must:
 
 ## Technical Context
 
+### Current Architecture
+- **Type**: Static HTML/JavaScript single-page application
+- **Deployment**: Digital Ocean Droplet (IP: 178.128.67.127)
+- **Web Server**: Nginx serving from `/var/www/html`
+- **Authentication**: Simple hardcoded credentials (admin/admin123)
+
 ### LLM Integration
 - **Endpoint**: `https://w3af7ebiihzxumrnhjb2nh2o.agents.do-ai.run/api/v1/chat/completions`
 - **Type**: OpenAI-compatible API
 - **Model**: `gpt-oss-120b` (OpenAI GPT variant)
-- **Key Feature**: Streaming responses for real-time interaction
-- **No API Key Required**: Open endpoint
+- **API Key**: `0ZO1hlXaU2TtJG2_j6_vQSTkjM1Ap4vH`
+- **Key Feature**: Server-Sent Events (SSE) for streaming responses
+- **JavaScript Fetch API**: Used for real-time chat streaming
 
-### Architecture Patterns
-```python
-# Always use async/await patterns
-async def stream_chat(self, messages: list):
-    async with self.client.stream(...) as response:
-        async for line in response.aiter_lines():
-            yield parse_sse(line)
-
-# UUID primary keys for all models
-id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-
-# Structured logging
-logger = structlog.get_logger(__name__)
+### Frontend Architecture
+```javascript
+// SSE streaming pattern for chat responses
+async function streamResponse(messages) {
+    const response = await fetch(API_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_CONFIG.apiKey}`
+        },
+        body: JSON.stringify({
+            messages: messages,
+            model: API_CONFIG.model,
+            stream: true
+        })
+    });
+    // Parse SSE data chunks for real-time display
+}
 ```
 
 ### Military System Prompt
@@ -74,33 +86,33 @@ Always consider:
 
 ## Code Style Guidelines
 
-### Python Backend
-- Use type hints for all functions
-- Follow PEP 8 with 88-character line limit (Black formatter)
-- Async/await for all I/O operations
-- Comprehensive error handling with structured logging
-- Docstrings for all public methods
+### HTML/CSS
+- Military green color palette (#6B7C32 primary, #4A5A1F dark, #8B9A5A light)
+- Responsive design with CSS Grid and Flexbox
+- Clean, minimalist military aesthetic
+- Logo sizing: 400px for login screen, 60px for header (maintains header height)
+- Classification banners at top and bottom
 
-### Database
-- UUID primary keys for all tables
-- `created_at` and `updated_at` timestamps
-- JSONB for flexible metadata fields
-- Use Alembic for all schema changes
-- Repository pattern for data access
+### JavaScript
+- Vanilla JavaScript (no frameworks)
+- Async/await for all API calls
+- SSE handling for real-time streaming
+- LocalStorage for session management
+- Clean separation of concerns
 
-### API Design
-- RESTful endpoints with clear naming
-- Pydantic schemas for validation
-- Response models for all endpoints
-- Proper HTTP status codes
-- Comprehensive error messages
+### UI/UX Design
+- Real-time word-by-word streaming display
+- Clear user/assistant message distinction
+- Military-appropriate visual hierarchy
+- Download to Word document functionality
+- Continue response capability
 
 ### Security
-- JWT tokens with 15-minute expiry
-- Refresh tokens in httpOnly cookies
-- Input validation on all endpoints
-- SQL injection prevention via SQLAlchemy
-- XSS prevention in all outputs
+- Simple authentication (to be enhanced)
+- Input sanitization for chat messages
+- HTML entity escaping/unescaping for display
+- CORS handled by nginx proxy
+- XSS prevention in innerHTML usage
 
 ## Military Domain Knowledge
 
@@ -155,31 +167,42 @@ Always consider:
 
 ## Common Pitfalls to Avoid
 
-1. **Don't use synchronous I/O** - Always async/await
-2. **Don't trust user input** - Always validate
-3. **Don't store sensitive data in logs** - Use structured logging
-4. **Don't skip health checks** - Critical for Docker
+1. **Don't deploy to wrong directory** - Always use `/var/www/html/` (NOT `/var/www/genaryn-static/` which is deprecated)
+2. **Don't trust user input** - Always validate and sanitize
+3. **Don't break CSS** - Ensure no conflicting properties in styles
+4. **Don't forget cache busting** - Add version query strings to assets
 5. **Don't ignore military context** - Accuracy matters
+
+## Deprecated Directories
+
+**DO NOT USE**:
+- `/var/www/genaryn-static/` - Old deployment directory (no longer served by nginx)
+- Any Docker/container references - Project is now static HTML only
 
 ## Project Status
 
 **Completed**:
-- Docker infrastructure (PostgreSQL, Redis, Nginx)
-- FastAPI application structure
-- Database models and migrations
-- LLM service integration with Digital Ocean
+- Static HTML/JavaScript single-page application
+- Digital Ocean Droplet deployment
+- Nginx web server configuration
+- LLM integration with streaming responses
+- Military green UI theme
+- Basic authentication system
+- Download to Word document feature
+- Continue response functionality
 
-**In Progress**:
-- JWT authentication system
-- WebSocket real-time chat
-- Frontend React application
-- Military decision frameworks
+**Current Issues**:
+- Logo sizing needs adjustment (400px login, 60px header)
+- Logout button implementation
+- Login page refinements
 
 **Planned**:
+- Enhanced authentication system
 - Advanced COA analysis
 - Intelligence fusion capabilities
 - Multi-user collaboration
 - Production hardening
+- Database backend for persistence
 
 ## Resources
 
@@ -191,18 +214,26 @@ Always consider:
 ## Key Commands
 
 ```bash
+# Deployment
+ssh root@178.128.67.127                      # Connect to server
+scp index.html root@178.128.67.127:/var/www/html/  # Deploy HTML
+scp genaryn_logo.svg root@178.128.67.127:/var/www/html/  # Deploy logo
+
+# Server Management
+sudo systemctl restart nginx                 # Restart nginx
+sudo nginx -t                               # Test nginx config
+tail -f /var/log/nginx/error.log           # View error logs
+tail -f /var/log/nginx/access.log          # View access logs
+
+# File Locations
+/var/www/html/index.html                    # Main application file
+/var/www/html/genaryn_logo.svg             # Logo file
+/etc/nginx/sites-available/genaryn-static   # Nginx config
+
 # Development
-docker-compose up -d          # Start all services
-docker-compose logs -f api    # View API logs
-docker exec -it genaryn_api_1 bash  # Enter container
-
-# Database
-alembic upgrade head          # Run migrations
-alembic revision -m "message" # Create migration
-
-# Testing
-pytest tests/                 # Run all tests
-pytest --cov=app tests/       # With coverage
+# Local testing: Open static-site/index.html in browser
+# Make changes to static-site/index-fixed.html
+# Deploy using scp command above
 ```
 
 ---
