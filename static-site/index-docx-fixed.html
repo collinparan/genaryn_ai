@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genaryn AI Deputy Commander</title>
+    <link rel="icon" type="image/svg+xml" href="/genaryn_logo.svg?v=9">
+
+    <!-- Add libraries for DOCX conversion -->
+    <script src="https://unpkg.com/html-docx-js@0.3.1/dist/html-docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #6B7C32;
+            --primary-dark: #4A5A1F;
+            --primary-light: #8B9A5A;
+            --white: #ffffff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-600: #6c757d;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .logo-login {
+            width: 400px;
+            max-width: 90%;
+            height: auto;
+            margin: 0 auto 30px;
+            display: block;
+        }
+
+        .header-logo {
+            height: 60px;
+            width: auto;
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .classification-banner {
+            position: fixed;
+            width: 100%;
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 2px;
+            padding: 6px 0;
+            z-index: 10000;
+        }
+
+        .classification-top {
+            top: 0;
+        }
+
+        .classification-bottom {
+            bottom: 0;
+        }
+
+        #login-screen {
+            position: fixed;
+            top: 32px;
+            left: 0;
+            right: 0;
+            bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+            z-index: 9999;
+        }
+
+        .login-container {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-size: 24px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            color: var(--gray-900);
+            font-size: 14px;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(107, 124, 50, 0.1);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .login-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .login-error {
+            color: #dc3545;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #main-app {
+            display: none;
+            position: fixed;
+            top: 32px;
+            bottom: 32px;
+            left: 0;
+            right: 0;
+            background: var(--gray-100);
+        }
+
+        .container {
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            padding: 15px 20px;
+            background: var(--white);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header p {
+            color: var(--gray-600);
+            font-size: 13px;
+            margin-left: 75px;
+        }
+
+        .logout-button {
+            padding: 10px 20px;
+            background: var(--gray-600);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-button:hover {
+            background: var(--gray-800);
+        }
+
+        .chat-container {
+            background: var(--white);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 0;
+            background: var(--gray-100);
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .user-message .message-avatar {
+            background: var(--primary-light);
+            color: var(--white);
+        }
+
+        .assistant-message .message-avatar {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .message-content {
+            flex: 1;
+            background: var(--white);
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Content styles */
+        .message-content p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: var(--gray-900);
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 16px 0 12px;
+            color: var(--primary-dark);
+        }
+
+        .message-content h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 14px 0 10px;
+            color: var(--primary-dark);
+        }
+
+        .message-content h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 12px 0 8px;
+            color: var(--primary-dark);
+        }
+
+        .message-content ul, .message-content ol {
+            margin: 8px 0;
+            padding-left: 24px;
+            color: var(--gray-900);
+        }
+
+        .message-content li {
+            margin: 4px 0;
+            line-height: 1.6;
+        }
+
+        .message-content code {
+            background: var(--gray-200);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--primary-dark);
+        }
+
+        .message-content pre {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .message-content strong {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .message-content em {
+            font-style: italic;
+            color: var(--gray-600);
+        }
+
+        .message-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+            background: var(--white);
+            box-shadow: var(--shadow);
+        }
+
+        .message-content th,
+        .message-content td {
+            border: 1px solid var(--gray-300);
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .message-content th {
+            background: var(--primary-color);
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .message-content td {
+            background: var(--white);
+            color: var(--gray-900);
+        }
+
+        .message-content tr:hover td {
+            background: var(--gray-100);
+        }
+
+        .processing {
+            display: inline-block;
+            color: var(--gray-600);
+            font-style: italic;
+        }
+
+        .processing::after {
+            content: '';
+            display: inline-block;
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid var(--gray-200);
+            background: var(--white);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            color: var(--gray-900);
+            font-size: 14px;
+            resize: none;
+            max-height: 120px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(107, 124, 50, 0.1);
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .send-button, .continue-button, .download-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .send-button {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .continue-button {
+            background: var(--primary-light);
+            color: var(--white);
+        }
+
+        .continue-button:hover:not(:disabled) {
+            background: var(--primary-color);
+        }
+
+        .download-button {
+            background: var(--gray-600);
+            color: var(--white);
+        }
+
+        .download-button:hover {
+            background: var(--gray-800);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--gray-200);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="classification-banner classification-top">DEMO // UNCLASSIFIED</div>
+    <div class="classification-banner classification-bottom">DEMO // UNCLASSIFIED</div>
+
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="/genaryn_logo.svg?v=9" alt="Genaryn Logo" class="logo-login">
+                <h1>Genaryn AI Deputy Commander</h1>
+                <p>Military Decision Support System</p>
+            </div>
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit" class="login-button">LOGIN</button>
+                <div id="login-error" class="login-error"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-app">
+        <div class="container">
+            <div class="header">
+                <div class="header-left">
+                    <img src="/genaryn_logo.svg?v=9" alt="Genaryn Logo" class="header-logo">
+                    <div class="header-content">
+                        <h1>Genaryn AI Deputy Commander</h1>
+                        <p>Independent AI Judgment • Stronger Commander Decisions</p>
+                    </div>
+                </div>
+                <button class="logout-button" onclick="handleLogout()">Logout</button>
+            </div>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea
+                            class="chat-input"
+                            id="chat-input"
+                            placeholder="Ask for strategic advice, analyze courses of action, or request decision support..."
+                            rows="1"
+                        ></textarea>
+                        <div class="chat-actions">
+                            <button class="send-button" id="send-button" onclick="sendMessage()">Send</button>
+                            <button class="continue-button hidden" id="continue-button" onclick="continueResponse()">Continue Response</button>
+                            <button class="download-button hidden" id="download-button" onclick="downloadDoc()">Download Doc</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // IMPORTANT: Clear any existing login state on this deployment
+        // This ensures users see the login screen
+        localStorage.removeItem('isLoggedIn');
+
+        // API Configuration
+        const API_CONFIG = {
+            endpoint: 'https://w3af7ebiihzxumrnhjb2nh2o.agents.do-ai.run/api/v1/chat/completions',
+            apiKey: '0ZO1hlXaU2TtJG2_j6_vQSTkjM1Ap4vH',
+            model: 'gpt-oss-120b'
+        };
+
+        // Chat state
+        let conversationHistory = [];
+        let lastAssistantMessage = '';
+
+        // System prompt
+        const SYSTEM_PROMPT = `You are the Genaryn AI Deputy Commander, a strategic advisor for military operations.
+
+Your role:
+- Provide clear, actionable intelligence and recommendations
+- Analyze multiple courses of action (COAs) with risk assessments
+- Support the Military Decision Making Process (MDMP)
+- Maintain operational security (OPSEC)
+- Consider time constraints and resource limitations
+
+Communication style:
+- Be concise and direct
+- Use military terminology appropriately
+- Present information in priority order
+- Clearly distinguish facts from assessments
+- Provide confidence levels for assessments
+
+Always consider:
+- Mission objectives
+- Commander's intent
+- Available resources
+- Enemy capabilities
+- Terrain and weather
+- Time constraints`;
+
+        // Login handler
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin123') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                localStorage.setItem('isLoggedIn', 'true');
+                initializeChat();
+            } else {
+                document.getElementById('login-error').textContent = 'Invalid credentials';
+                setTimeout(() => {
+                    document.getElementById('login-error').textContent = '';
+                }, 3000);
+            }
+        }
+
+        // Logout handler
+        function handleLogout() {
+            localStorage.removeItem('isLoggedIn');
+            conversationHistory = [];
+            document.getElementById('chat-messages').innerHTML = '';
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'flex';
+            // Clear form
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('login-error').textContent = '';
+        }
+
+        // Check login status on load - DISABLED for now to ensure login screen shows
+        window.onload = function() {
+            // Removed auto-login check to ensure login screen shows
+            // Users must log in each time for now
+        };
+
+        // Initialize chat
+        function initializeChat() {
+            conversationHistory = [{
+                role: 'system',
+                content: SYSTEM_PROMPT
+            }];
+
+            const input = document.getElementById('chat-input');
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Auto-resize textarea
+            input.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+        }
+
+        // Add message to chat
+        function addMessage(role, content, isStreaming = false) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+
+            const avatarDiv = document.createElement('div');
+            avatarDiv.className = 'message-avatar';
+            avatarDiv.textContent = role === 'user' ? 'U' : 'AI';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.id = isStreaming ? 'streaming-message' : '';
+
+            if (isStreaming) {
+                contentDiv.innerHTML = '<span class="processing">Processing</span>';
+            } else {
+                contentDiv.textContent = content;
+            }
+
+            messageDiv.appendChild(avatarDiv);
+            messageDiv.appendChild(contentDiv);
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            return contentDiv;
+        }
+
+        // Stream response with SSE
+        async function streamResponse(messages) {
+            const streamingDiv = addMessage('assistant', '', true);
+            let fullResponse = '';
+
+            try {
+                const response = await fetch(API_CONFIG.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        messages: messages,
+                        model: API_CONFIG.model,
+                        stream: true,
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                streamingDiv.textContent = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                const content = parsed.choices?.[0]?.delta?.content;
+
+                                if (content) {
+                                    fullResponse += content;
+                                    // Show as text during streaming
+                                    streamingDiv.textContent = fullResponse;
+
+                                    const messagesContainer = document.getElementById('chat-messages');
+                                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                }
+                            } catch (e) {
+                                console.error('Error parsing SSE data:', e);
+                            }
+                        }
+                    }
+                }
+
+                // After streaming: Simple HTML rendering
+                if (fullResponse) {
+                    // Basic unescape HTML entities
+                    let html = fullResponse
+                        .replace(/&lt;/g, '<')
+                        .replace(/&gt;/g, '>')
+                        .replace(/&amp;/g, '&')
+                        .replace(/&quot;/g, '"')
+                        .replace(/&#039;/g, "'")
+                        .replace(/&nbsp;/g, ' ');
+
+                    // Set innerHTML to render HTML
+                    streamingDiv.innerHTML = html;
+
+                    lastAssistantMessage = fullResponse;
+
+                    document.getElementById('continue-button').classList.remove('hidden');
+                    document.getElementById('download-button').classList.remove('hidden');
+
+                    const messagesContainer = document.getElementById('chat-messages');
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+
+            } catch (error) {
+                console.error('Streaming error:', error);
+                streamingDiv.innerHTML = '<p style="color:#dc3545;">Error: Failed to get response. Please try again.</p>';
+            }
+
+            return fullResponse;
+        }
+
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            input.value = '';
+            input.style.height = 'auto';
+            document.getElementById('send-button').disabled = true;
+
+            document.getElementById('continue-button').classList.add('hidden');
+            document.getElementById('download-button').classList.add('hidden');
+
+            addMessage('user', message);
+            conversationHistory.push({ role: 'user', content: message });
+
+            const response = await streamResponse(conversationHistory);
+
+            if (response) {
+                conversationHistory.push({ role: 'assistant', content: response });
+            }
+
+            document.getElementById('send-button').disabled = false;
+            input.focus();
+        }
+
+        // Continue response
+        async function continueResponse() {
+            const continuePrompt = "Please continue your previous response from where you left off.";
+
+            document.getElementById('continue-button').classList.add('hidden');
+            document.getElementById('download-button').classList.add('hidden');
+
+            addMessage('user', continuePrompt);
+            conversationHistory.push({ role: 'user', content: continuePrompt });
+
+            const response = await streamResponse(conversationHistory);
+
+            if (response) {
+                conversationHistory.push({ role: 'assistant', content: response });
+                lastAssistantMessage += '\n\n' + response;
+            }
+        }
+
+        // Download as Word doc - PROPERLY CONVERTING TO DOCX
+        function downloadDoc() {
+            if (!lastAssistantMessage) return;
+
+            // Process the content - unescape HTML entities
+            let processedContent = lastAssistantMessage
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&amp;/g, '&')
+                .replace(/&quot;/g, '"')
+                .replace(/&#039;/g, "'")
+                .replace(/&nbsp;/g, ' ');
+
+            // Create complete HTML document with proper styling
+            const htmlContent = `
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+<head>
+    <meta charset="UTF-8">
+    <title>Genaryn AI Report</title>
+    <style>
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #333;
+            margin: 40px;
+        }
+        h1 {
+            font-size: 16pt;
+            color: #4A5A1F;
+            border-bottom: 2px solid #6B7C32;
+            padding-bottom: 5px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 14pt;
+            color: #4A5A1F;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+        h3 {
+            font-size: 12pt;
+            color: #4A5A1F;
+            margin-top: 15px;
+            margin-bottom: 6px;
+        }
+        p {
+            margin: 10px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #6B7C32;
+            color: white;
+            font-weight: bold;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 4px;
+            font-family: Consolas, monospace;
+            font-size: 10pt;
+        }
+        pre {
+            background: #f0f0f0;
+            border-left: 3px solid #6B7C32;
+            padding: 10px;
+            margin: 10px 0;
+            font-family: Consolas, monospace;
+            font-size: 10pt;
+            white-space: pre-wrap;
+        }
+        ul, ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        li {
+            margin: 5px 0;
+        }
+        strong {
+            font-weight: bold;
+            color: #4A5A1F;
+        }
+        em {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 30px; page-break-after: avoid;">
+        <h1 style="border: none; font-size: 20pt; margin-bottom: 10px;">Genaryn AI Deputy Commander</h1>
+        <p style="color: #666; font-style: italic; font-size: 12pt;">Strategic Analysis Report</p>
+        <p style="color: #999; font-size: 10pt;">Generated: ${new Date().toLocaleString()}</p>
+    </div>
+    <hr style="border: none; border-top: 2px solid #6B7C32; margin: 20px 0;">
+    ${processedContent}
+    <hr style="border: none; border-top: 2px solid #6B7C32; margin: 30px 0 20px 0;">
+    <div style="text-align: center; color: #666; font-size: 10pt; margin-top: 40px;">
+        <p><em>This report was generated by Genaryn AI Deputy Commander</em></p>
+        <p><em>Independent AI Judgment • Stronger Commander Decisions</em></p>
+    </div>
+</body>
+</html>`;
+
+            // Use html-docx-js to convert HTML to proper DOCX format
+            try {
+                // Convert HTML to DOCX blob using html-docx-js
+                const docxBlob = htmlDocx.asBlob(htmlContent);
+
+                // Save the file using FileSaver.js
+                saveAs(docxBlob, `genaryn-report-${new Date().toISOString().slice(0, 10)}.docx`);
+            } catch (error) {
+                console.error('Error generating DOCX:', error);
+                alert('Error generating document. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
